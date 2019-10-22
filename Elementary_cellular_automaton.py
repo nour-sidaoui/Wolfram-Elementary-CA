@@ -55,3 +55,4 @@ def run(rule=30, pause=0.05, lines=40):
 
 if __name__ == '__main__':
     run(rule=90)
+
