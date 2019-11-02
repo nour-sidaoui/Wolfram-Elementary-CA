@@ -20,7 +20,15 @@ def replace_and_print(line_list):
     print(line_list)
 
 
-def run(rule=30, pause=0.05, lines=40):
+def calculate_new_state(state, rules):
+    """calculates the next state and closes lines with periodic boundaries"""
+    closed_line = f'{state[-1]}{state}{state[0]}'
+    listed = list(window(closed_line))
+    new_state = ''.join(rules[stride] for stride in listed)
+    return new_state
+
+
+def run(rule=30, pause=0.1, lines=40):
     """runs Wolfram Elementary CA with given rule entered as command line parameter or directly as argument"""
 
     # checking for 1st parameter (if given), and setting it to var (code)
@@ -36,23 +44,14 @@ def run(rule=30, pause=0.05, lines=40):
     # creating dictionary based on [possibles cases] as keys, and converted binary code as values respectively
     rules = {possible_cases[i]: list(param)[i] for i in range(0, len(param), 1)}
 
-    # declaring 'state' var to avoid "Local variable might be referenced before assignment" error
-    state = ''
+    replace_and_print(initial_state)
+    state = initial_state
 
-    for i in range(lines):
-        if i == 0:                                                           # printing first line (from initial state)
-            replace_and_print(initial_state)
-            state = f'{initial_state[-1]}{initial_state}{initial_state[0]}'  # closing lines with "periodic boundaries"
-            state = list(window(state))
-
-        else:
-            time.sleep(pause)                                                # pause between lines for animation effect
-            new_state = ''.join(rules[stride] for stride in state)
-            replace_and_print(new_state)
-            new_state = f'{new_state[-1]}{new_state}{new_state[0]}'          # closing lines with "periodic boundaries"
-            state = list(window(new_state))
+    for i in range(lines - 1):                           # -1 as the initial state has been replaced and printed above
+        time.sleep(pause)
+        state = calculate_new_state(state, rules)
+        replace_and_print(state)
 
 
 if __name__ == '__main__':
     run(rule=90)
-
